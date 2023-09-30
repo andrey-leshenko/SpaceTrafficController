@@ -109,8 +109,10 @@ export class Satellite {
     radius: number = 1
     path: Path
     space: Space
+    hue: number
 
     constructor(space: Space, path: Path) {
+        this.hue = Math.random() * 360
         this.path = path
         this.space = space
     }
@@ -135,16 +137,16 @@ export class Satellite {
 
     previewNewPath(angle: number) {
         let newPath = this.path.rotateAround(this.getPosAtTime(), angle)
-        this.space.ctx.strokeStyle = "#505"
-        this.space.ctx.lineWidth = 2
+        this.space.ctx.strokeStyle = `hsl(${this.hue}, 40%, 40%)`
+        this.space.ctx.lineWidth = 6
         this.space.ctx.beginPath()
         newPath.trace(this.space.ctx)
         this.space.ctx.stroke()
     }
 
     drawPath() {
-        this.space.ctx.strokeStyle = "#505"
-        this.space.ctx.lineWidth = 2
+        this.space.ctx.strokeStyle = `hsl(${this.hue}, 40%, 40%)`
+        this.space.ctx.lineWidth = 6
         this.space.ctx.beginPath()
         this.path.trace(this.space.ctx)
         this.space.ctx.stroke()
@@ -152,7 +154,7 @@ export class Satellite {
 
     drawSelf() {
         let {x, y} = this.getPosAtTime()
-        this.space.ctx.fillStyle = "#808"
+        this.space.ctx.fillStyle = `hsl(${this.hue}, 80%, 80%)`
         this.space.ctx.beginPath()
         this.space.ctx.arc(x, y, this.radius, 0, 2 * Math.PI)
         this.space.ctx.fill()
