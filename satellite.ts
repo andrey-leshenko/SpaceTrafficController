@@ -18,6 +18,7 @@ export class Satellite {
     collisionWarning: boolean = false
     active: boolean = false
     activateTimeout: PausableTimeout
+    createTime: number
 
     constructor(space: Space, path: Path, launch_pt: Point) {
         this.hue = Math.random() * 360
@@ -25,6 +26,7 @@ export class Satellite {
         this.space = space
         this.pathFraction = this.path.pointToFraction(launch_pt)
         this.activateTimeout = new PausableTimeout(this.activate.bind(this), 2)
+        this.createTime = performance.now()/1000
     }
 
     pause() {
@@ -77,9 +79,14 @@ export class Satellite {
     }
 
     drawSelf() {
+        this.space.ctx.save()
         this.space.ctx.imageSmoothingEnabled = false
         let { x, y } = this.getPosAtTime()
         this.space.ctx.fillStyle = `hsl(${this.hue}, 80%, 80%)`
+        if (!this.active) {
+            let age = performance.now()/1000 - this.createTime
+            this.space.ctx.globalAlpha = (Math.sin(age*6)+1)/4+0.5
+        }
         this.space.ctx.drawImage(satelliteImage,
             x - this.radius,
             y - this.radius, this.radius * 2, this.radius * 2)
@@ -89,5 +96,6 @@ export class Satellite {
                 y - this.radius - this.warningIconSize / 2,
                 this.warningIconSize, this.warningIconSize)
         }
+        this.space.ctx.restore()
     }
 }
