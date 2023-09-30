@@ -43,10 +43,14 @@ export class Space {
 
     pause() {
         this.spawnTimeout.pause()
+        for (let s of this.satellites)
+            s.pause()
     }
 
     resume() {
         this.spawnTimeout.resume()
+        for (let s of this.satellites)
+            s.resume()
     }
 
     mouseDown(x: number, y: number) {
@@ -92,7 +96,11 @@ export class Space {
         // Check for future collisions
         for (let t = 0; t < 2; t += (1 / 3)) {
             for (let i = 0; i < this.satellites.length; i++) {
+                if (!this.satellites[i].active)
+                    continue
                 for (let j = i + 1; j < this.satellites.length; j++) {
+                    if (!this.satellites[j].active)
+                        continue
                     let pi = this.satellites[i].getPosAtTime(t)
                     let pj = this.satellites[j].getPosAtTime(t)
                     if (dist(pi, pj) < this.satellites[i].radius + this.satellites[j].radius) {

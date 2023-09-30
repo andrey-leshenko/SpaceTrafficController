@@ -1,7 +1,6 @@
 import { Space } from './space.js'
 import { Path } from './path.js'
-import { Point } from './utils.js'
-
+import { PausableTimeout, Point } from './utils.js'
 
 let satelliteImage = new Image()
 satelliteImage.src = "assets/sat.png"
@@ -17,15 +16,32 @@ export class Satellite {
     space: Space
     hue: number
     collisionWarning: boolean = false
+    active: boolean = false
+    activateTimeout: PausableTimeout
 
     constructor(space: Space, path: Path, launch_pt: Point) {
         this.hue = Math.random() * 360
         this.path = path
         this.space = space
         this.pathFraction = this.path.pointToFraction(launch_pt)
+        this.activateTimeout = new PausableTimeout(this.activate.bind(this), 2)
+    }
+
+    pause() {
+        this.activateTimeout.pause()
+    }
+
+    resume() {
+        this.activateTimeout.resume()
+    }
+
+    activate() {
+        this.active = true
     }
 
     update(dt: number) {
+        if (!this.active)
+            return
         this.pathFraction += dt * this.speed / this.path.length
         this.pathFraction -= Math.floor(this.pathFraction)
     }
