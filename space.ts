@@ -8,7 +8,7 @@ export class Space {
     ctx: CanvasRenderingContext2D
     width: number
     height: number
-    spawnInterval: number = 3
+    spawnInterval = (n: number) => 3 + Math.sqrt(n) * 3
     spawnTimerStart: number = 0
     spawnTime: number = 0
     spawnTimeout: number = 0
@@ -27,7 +27,7 @@ export class Space {
         this.satellites.push(new Satellite(this, path, launch_pt));
 
         this.spawnTimerStart = performance.now()/1000
-        this.spawnTime = this.spawnInterval
+        this.spawnTime = this.spawnInterval(this.satellites.length - 1)
         this.spawnTimeout = setTimeout(this.spawnSatellite.bind(this), this.spawnTime * 1000)
     }
 
