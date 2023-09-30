@@ -4,6 +4,8 @@ import { Point, dist } from './utils.js'
 export class Space {
     satellites: Satellite[] = []
     ctx: CanvasRenderingContext2D
+    width: number
+    height: number
 
     editedSatellite: Satellite | null = null
     editedAngle = 0
@@ -33,8 +35,10 @@ export class Space {
         }
     }
 
-    constructor(ctx: CanvasRenderingContext2D) {
+    constructor(ctx: CanvasRenderingContext2D, width: number, height: number) {
         this.ctx = ctx
+        this.width = width
+        this.height = height
         this.spawnSatellite()
     }
 

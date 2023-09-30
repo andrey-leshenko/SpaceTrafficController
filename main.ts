@@ -7,7 +7,7 @@ let ctx = canvas.getContext('2d')!
 
 let waitFrame = () => new Promise((resolve,reject) => requestAnimationFrame(resolve))
 
-let space = new Space(ctx)
+let space = new Space(ctx, canvas.width, canvas.height)
 
 document.addEventListener('mousedown', (e) => {
     space.mouseDown(e.clientX, e.clientY)
