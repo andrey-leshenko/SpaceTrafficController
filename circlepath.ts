@@ -1,4 +1,4 @@
-import { Point, dist, getRandomChunk } from './utils.js'
+import { Point, getRandomChunk } from './utils.js'
 import { Space } from './space.js'
 import { Path } from './path.js'
 
@@ -8,28 +8,62 @@ export class CirclePath implements Path {
     radius: number
     space: Space
 
-    constructor(space: Space, center: Point, radius: number) {
-        this.center = center
+    static spawnCirclePath(space: Space, launch_pt: Point) {
+        let radius = getRandomChunk(24, 240, 8)
+        let angle = getRandomChunk(0, 360, 15) * Math.PI / 180.0
+        return new CirclePath(space, radius, launch_pt, angle)
+    }
+
+    constructor(space: Space, radius: number, launch_pt: Point, angle: number) {
+        // angle is the angle the spaceship is facing while on the path
+        // i.e. it's the tangent to the circle at launch_point
+        this.space = space
         this.radius = radius
         this.length = 2 * Math.PI * radius
-        this.space = space
+
+        let phase = (angle + 1.5 * Math.PI);
+        this.center = {
+            x: launch_pt.x - Math.cos(phase) * radius,
+            y: launch_pt.y + Math.sin(phase) * radius
+        }
     }
 
     getPos(fraction: number): Point {
-        return { x: 0, y: 0 }
+        let phase = fraction * 2 * Math.PI;
+        return {
+            x: this.center.x + this.radius * Math.cos(phase),
+            y: this.center.y + this.radius * Math.sin(phase)
+        }
     }
 
     trace(ctx: CanvasRenderingContext2D): void {
-        ctx.moveTo(this.center.x, this.center.y)
-        ctx.lineTo(this.center.x, this.center.y)
+        [-1, 0, 1].forEach(xmult =>
+            [-1, 0, 1].forEach(ymult => {
+                ctx.moveTo(
+                    this.center.x + xmult * this.space.width + this.radius,
+                    this.center.y + ymult * this.space.height
+                );
+                ctx.arc(
+                    this.center.x + xmult * this.space.width,
+                    this.center.y + ymult * this.space.height,
+                    this.radius,
+                    0,
+                    2 * Math.PI
+                )
+            })
+        );
     }
 
     pointToFraction(point: Point): number {
-        let distFromStart = dist(point, this.center)
-        return distFromStart / this.length
+        let radius_vector = {
+            x: point.x - this.center.x,
+            y: point.y - this.center.y
+        }
+        let phase = Math.atan2(radius_vector.y, radius_vector.x)
+        return phase / (2 * Math.PI)
     }
 
     rotateAround(point: Point, angle: number): Path {
-        return this;
+        return new CirclePath(this.space, this.radius, point, angle)
     }
 }

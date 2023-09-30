@@ -1,6 +1,7 @@
 import { Satellite } from './satellite.js'
 import { LinePath } from './linepath.js'
 import { Point, dist, getRandomChunk } from './utils.js'
+import { CirclePath } from './circlepath.js'
 
 export class Space {
     satellites: Satellite[] = []
@@ -35,8 +36,9 @@ export class Space {
                 break
         }
 
-        let linepath = LinePath.spawnLinePath(this, launch_pt!)
-        this.satellites.push(new Satellite(this, linepath, launch_pt!));
+        let pathfunc = [LinePath.spawnLinePath, CirclePath.spawnCirclePath][Math.round(Math.random())]    
+        let path = pathfunc(this, launch_pt!)
+        this.satellites.push(new Satellite(this, path, launch_pt!));
 
         this.spawnTimerStart = performance.now()/1000
         this.spawnTime = this.spawnInterval
@@ -92,17 +94,6 @@ export class Space {
             }
         }
 
-        // Check for collisions
-        for (let i = 0; i < this.satellites.length; i++) {
-            for (let j = i + 1; j < this.satellites.length; j++) {
-                let pi = this.satellites[i].getPosAtTime()
-                let pj = this.satellites[j].getPosAtTime()
-                if (dist(pi, pj) < this.satellites[i].radius + this.satellites[j].radius) {
-                    alert('BOOM!')
-                }
-            }
-        }
-
         // Check for future collisions
         for (let t = 0; t < 2; t += (1 / 3)) {
             for (let i = 0; i < this.satellites.length; i++) {
@@ -117,7 +108,18 @@ export class Space {
             }
         }
 
-
+        // Check for collisions
+        for (let i = 0; i < this.satellites.length; i++) {
+            for (let j = i + 1; j < this.satellites.length; j++) {
+                let pi = this.satellites[i].getPosAtTime()
+                let pj = this.satellites[j].getPosAtTime()
+                if (dist(pi, pj) < this.satellites[i].radius + this.satellites[j].radius) {
+                    console.log('BOOM!')
+                    this.satellites[i].collisionWarning = false
+                    this.satellites[j].collisionWarning = false
+                }
+            }
+        }
 
         for (let s of this.satellites) {
             s.drawPath()

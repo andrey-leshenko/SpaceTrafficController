@@ -5,11 +5,14 @@ import { Point } from './utils.js'
 
 let satelliteImage = new Image()
 satelliteImage.src = "assets/sat.png"
+let warningImage = new Image()
+warningImage.src = "assets/warn.png"
 
 export class Satellite {
     pathFraction = 0
-    speed = 10
-    radius: number = 10
+    speed = 20
+    radius: number = 15
+    warningIconSize = 15
     path: Path
     space: Space
     hue: number
@@ -62,7 +65,13 @@ export class Satellite {
         let { x, y } = this.getPosAtTime()
         this.space.ctx.fillStyle = `hsl(${this.hue}, 80%, 80%)`
         this.space.ctx.drawImage(satelliteImage,
-            x - this.radius / 2,
-            y - this.radius / 2, this.radius, this.radius)
+            x - this.radius,
+            y - this.radius, this.radius * 2, this.radius * 2)
+        if (this.collisionWarning) {
+            this.space.ctx.drawImage(warningImage,
+                x + this.radius - this.warningIconSize / 2,
+                y - this.radius - this.warningIconSize / 2,
+                this.warningIconSize, this.warningIconSize)
+        }
     }
 }
