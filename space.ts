@@ -1,4 +1,5 @@
 import { Satellite } from './satellite.js'
+import { LinePath } from './linepath.js'
 import { Point, dist } from './utils.js'
 
 export class Space {
@@ -11,7 +12,7 @@ export class Space {
     editedAngle = 0
 
     spawnSatellite() {
-        this.satellites.push(new Satellite());
+        this.satellites.push(new Satellite(this, LinePath.spawnLinePath(this)));
     }
 
     mouseDown(x: number, y: number) {
