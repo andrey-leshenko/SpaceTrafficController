@@ -70,6 +70,9 @@ export class Space {
                 let pj = this.satellites[j].getPosAtTime()
                 if (dist(pi, pj) < this.satellites[i].radius + this.satellites[j].radius) {
                     alert('BOOM!')
+                    for (let s of this.satellites) {
+                        s.collisionWarning = false
+                    }
                 }
             }
         }
