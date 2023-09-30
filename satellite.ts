@@ -1,12 +1,12 @@
-import {Space} from './space.js'
-import {Path} from './path.js'
-import {Point} from './utils.js'
+import { Space } from './space.js'
+import { Path } from './path.js'
+import { Point } from './utils.js'
 
 
 export class Satellite {
     pathFraction = 0
-    speed = 1
-    radius: number = 1
+    speed = 10
+    radius: number = 10
     path: Path
     space: Space
     hue: number
@@ -55,7 +55,7 @@ export class Satellite {
     }
 
     drawSelf() {
-        let {x, y} = this.getPosAtTime()
+        let { x, y } = this.getPosAtTime()
         this.space.ctx.fillStyle = `hsl(${this.hue}, 80%, 80%)`
         this.space.ctx.beginPath()
         this.space.ctx.arc(x, y, this.radius, 0, 2 * Math.PI)

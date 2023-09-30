@@ -1,6 +1,6 @@
-import {Point, dist, getRandomChunk} from './utils.js'
-import {Space} from './space.js'
-import {Path} from './path.js'
+import { Point, dist, getRandomChunk } from './utils.js'
+import { Space } from './space.js'
+import { Path } from './path.js'
 
 function interpolate(start: number, end: number, fraction: number): number {
     return (1 - fraction) * start + fraction * end
@@ -16,16 +16,14 @@ export class LinePath implements Path {
         let angle_rad = getRandomChunk(0, 360, 15) * Math.PI / 180.0
         return new LinePath(space, launch_pt, angle_rad)
     }
-    
-    
 
     constructor(space: Space, point: Point, angle: number) {
         this.space = space
 
         if (Math.abs(Math.cos(angle)) < 0.001) {
             // Vertical path
-            let top = {x: point.x, y: 0}  // TODO use space boundaries
-            let bottom = {x: point.x, y: this.space.height}
+            let top = { x: point.x, y: 0 }  // TODO use space boundaries
+            let bottom = { x: point.x, y: this.space.height }
             if (Math.sin(angle) > 0) {
                 this.start = top
                 this.end = bottom
@@ -53,19 +51,19 @@ export class LinePath implements Path {
 
             // Assume rightwards path
             if (m < 0 && topHitX < space.width) {
-                end = {x: topHitX, y: 0}
+                end = { x: topHitX, y: 0 }
             } else if (m > 0 && bottomHitX < space.width) {
-                end = {x: bottomHitX, y: space.height}
+                end = { x: bottomHitX, y: space.height }
             } else {
-                end = {x: space.width, y: rightHitY}
+                end = { x: space.width, y: rightHitY }
             }
 
             if (m > 0 && topHitX > 0) {
-                start = {x: topHitX, y: 0}
+                start = { x: topHitX, y: 0 }
             } else if (m < 0 && bottomHitX > 0) {
-                start = {x: bottomHitX, y: space.height}
+                start = { x: bottomHitX, y: space.height }
             } else {
-                start = {x: 0, y: leftHitY}
+                start = { x: 0, y: leftHitY }
             }
 
             if (Math.cos(angle) < 0) {
@@ -82,9 +80,11 @@ export class LinePath implements Path {
         this.space = space
     }
 
-    getPos(fraction: number): {x: number, y: number} {
-        return {x: interpolate(this.start.x, this.end.x, fraction),
-                y: interpolate(this.start.y, this.end.y, fraction)}
+    getPos(fraction: number): { x: number, y: number } {
+        return {
+            x: interpolate(this.start.x, this.end.x, fraction),
+            y: interpolate(this.start.y, this.end.y, fraction)
+        }
     }
 
     pointToFraction(point: Point): number {
@@ -98,7 +98,6 @@ export class LinePath implements Path {
     }
 
     rotateAround(point: Point, angle: number): Path {
-
         return new LinePath(this.space, point, angle)
     }
 }

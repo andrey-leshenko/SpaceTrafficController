@@ -1,6 +1,6 @@
-import {Point, dist, getRandomChunk} from './utils.js'
-import {Space} from './space.js'
-import {Path} from './path.js'
+import { Point, dist, getRandomChunk } from './utils.js'
+import { Space } from './space.js'
+import { Path } from './path.js'
 
 export class CirclePath implements Path {
     length: number
@@ -16,7 +16,7 @@ export class CirclePath implements Path {
     }
 
     getPos(fraction: number): Point {
-        return {x:0, y:0}
+        return { x: 0, y: 0 }
     }
 
     trace(ctx: CanvasRenderingContext2D): void {
@@ -30,6 +30,6 @@ export class CirclePath implements Path {
     }
 
     rotateAround(point: Point, angle: number): Path {
-       return this;
+        return this;
     }
 }
