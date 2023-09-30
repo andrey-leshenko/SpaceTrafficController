@@ -109,6 +109,7 @@ export class Satellite {
     radius: number = 1
     path: Path
     space: Space
+    collisionWarning: boolean = false
 
     constructor(space: Space, path: Path) {
         this.path = path
