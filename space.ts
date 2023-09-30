@@ -78,20 +78,6 @@ export class Space {
             }
         }
 
-        // Check for collisions
-        for (let i = 0; i < this.satellites.length; i++) {
-            for (let j = i + 1; j < this.satellites.length; j++) {
-                let pi = this.satellites[i].getPosAtTime()
-                let pj = this.satellites[j].getPosAtTime()
-                if (dist(pi, pj) < this.satellites[i].radius + this.satellites[j].radius) {
-                    alert('BOOM!')
-                    for (let s of this.satellites) {
-                        s.collisionWarning = false
-                    }
-                }
-            }
-        }
-
         // Check for future collisions
         for (let t = 0; t < 2; t += (1 / 3)) {
             for (let i = 0; i < this.satellites.length; i++) {
@@ -106,7 +92,18 @@ export class Space {
             }
         }
 
-
+        // Check for collisions
+        for (let i = 0; i < this.satellites.length; i++) {
+            for (let j = i + 1; j < this.satellites.length; j++) {
+                let pi = this.satellites[i].getPosAtTime()
+                let pj = this.satellites[j].getPosAtTime()
+                if (dist(pi, pj) < this.satellites[i].radius + this.satellites[j].radius) {
+                    console.log('BOOM!')
+                    this.satellites[i].collisionWarning = false
+                    this.satellites[j].collisionWarning = false
+                }
+            }
+        }
 
         for (let s of this.satellites) {
             s.drawPath()
