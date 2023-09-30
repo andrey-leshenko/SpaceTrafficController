@@ -1,6 +1,6 @@
 import { Satellite } from './satellite.js'
 import { LinePath } from './linepath.js'
-import { Point, dist, getRandomChunk} from './utils.js'
+import { Point, dist, getRandomChunk } from './utils.js'
 
 export class Space {
     satellites: Satellite[] = []
@@ -41,7 +41,7 @@ export class Space {
     mouseDown(x: number, y: number) {
         if (!this.editedSatellite) {
             for (let s of this.satellites) {
-                if (dist({x, y}, s.getPosAtTime()) < s.radius) {
+                if (dist({ x, y }, s.getPosAtTime()) < s.radius) {
                     this.editedSatellite = s
                     this.pause()
                     break
@@ -59,7 +59,7 @@ export class Space {
     }
     mouseMove(x: number, y: number) {
         if (this.editedSatellite) {
-            let {x:satX, y:satY} = this.editedSatellite.getPosAtTime()
+            let { x: satX, y: satY } = this.editedSatellite.getPosAtTime()
             this.editedAngle = Math.atan2(y - satY, x - satX)
         }
     }

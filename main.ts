@@ -1,11 +1,11 @@
-export {}
+export { }
 
-import {Space} from './space.js'
+import { Space } from './space.js'
 
 let canvas: HTMLCanvasElement = document.getElementById('canvas')! as HTMLCanvasElement
 let ctx = canvas.getContext('2d')!
 
-let waitFrame = () => new Promise((resolve,reject) => requestAnimationFrame(resolve))
+let waitFrame = () => new Promise((resolve, reject) => requestAnimationFrame(resolve))
 
 let space = new Space(ctx, canvas.width, canvas.height)
 
