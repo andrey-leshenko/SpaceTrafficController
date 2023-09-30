@@ -80,7 +80,7 @@ export class LinePath implements Path {
             start = {x: 0, y: leftHitY}
         }
 
-        if (Math.sin(angle) < 0) {
+        if (Math.cos(angle) < 0) {
             let tmp = start
             start = end
             end = tmp
