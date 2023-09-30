@@ -1,6 +1,6 @@
 import { Satellite } from './satellite.js'
 import { LinePath } from './linepath.js'
-import { Point, dist, getRandomChunk, PausableTimeout } from './utils.js'
+import { dist, getRandomChunk, PausableTimeout, modpos } from './utils.js'
 import { CirclePath } from './circlepath.js'
 
 export class Space {
@@ -13,6 +13,10 @@ export class Space {
 
     editedSatellite: Satellite | null = null
     editedAngle = 0
+
+    size() {
+        return {x: this.width, y: this.height}
+    }
 
     spawnSatellite() {
         let launch_pt = null
@@ -103,7 +107,9 @@ export class Space {
                         continue
                     let pi = this.satellites[i].getPosAtTime(t)
                     let pj = this.satellites[j].getPosAtTime(t)
-                    if (dist(pi, pj) < this.satellites[i].radius + this.satellites[j].radius) {
+                    let mpi = modpos(pi, this.size())
+                    let mpj = modpos(pj, this.size())
+                    if (dist(mpi, mpj) < this.satellites[i].radius + this.satellites[j].radius) {
                         this.satellites[i].collisionWarning = true
                         this.satellites[j].collisionWarning = true
                     }
@@ -116,7 +122,9 @@ export class Space {
             for (let j = i + 1; j < this.satellites.length; j++) {
                 let pi = this.satellites[i].getPosAtTime()
                 let pj = this.satellites[j].getPosAtTime()
-                if (dist(pi, pj) < this.satellites[i].radius + this.satellites[j].radius) {
+                let mpi = modpos(pi, this.size())
+                let mpj = modpos(pj, this.size())
+                if (dist(mpi, mpj) < this.satellites[i].radius + this.satellites[j].radius) {
                     console.log('BOOM!')
                     this.satellites[i].collisionWarning = false
                     this.satellites[j].collisionWarning = false

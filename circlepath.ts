@@ -1,4 +1,4 @@
-import { Point, getRandomChunk } from './utils.js'
+import { Point, getRandomChunk, modpos } from './utils.js'
 import { Space } from './space.js'
 import { Path } from './path.js'
 
@@ -29,10 +29,11 @@ export class CirclePath implements Path {
 
     getPos(fraction: number): Point {
         let phase = fraction * 2 * Math.PI;
-        return {
+        let pos = {
             x: this.center.x + this.radius * Math.cos(phase),
             y: this.center.y + this.radius * Math.sin(phase)
         }
+        return modpos(pos, this.space.size())
     }
 
     trace(ctx: CanvasRenderingContext2D): void {

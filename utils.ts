@@ -49,3 +49,14 @@ function getRandomInt(min: number, max: number) {
 export function getRandomChunk(min: number, max: number, quantization: number) {
     return getRandomInt(min / quantization, max / quantization) * quantization;
 }
+
+function mod(n: number, m: number) {
+    return ((n % m) + m) % m;
+}
+
+export function modpos(pos: Point, bounds: Point) {
+    return {
+        x: mod(pos.x, bounds.x),
+        y: mod(pos.y, bounds.y)
+    }
+}

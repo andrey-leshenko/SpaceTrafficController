@@ -1,6 +1,7 @@
 import { Space } from './space.js'
 import { Path } from './path.js'
-import { PausableTimeout, Point } from './utils.js'
+import { PausableTimeout, Point, modpos } from './utils.js'
+
 
 let satelliteImage = new Image()
 satelliteImage.src = "assets/sat.png"
@@ -78,7 +79,7 @@ export class Satellite {
 
     drawSelf() {
         this.space.ctx.imageSmoothingEnabled = false
-        let { x, y } = this.getPosAtTime()
+        let { x, y } = modpos(this.getPosAtTime(), this.space.size())
         this.space.ctx.fillStyle = `hsl(${this.hue}, 80%, 80%)`
         this.space.ctx.drawImage(satelliteImage,
             x - this.radius,
