@@ -4,6 +4,7 @@ import {Space} from './space.js'
 interface Path {
     length: number
     getPos(fraction: number): {x: number, y: number}
+    pointToFraction(point: Point): number
     rotateAround(point: Point, angle: number): Path
     trace(ctx: CanvasRenderingContext2D): void
 }
@@ -28,6 +29,11 @@ export class LinePath implements Path {
     getPos(fraction: number): {x: number, y: number} {
         return {x: interpolate(this.start.x, this.end.x, fraction),
                 y: interpolate(this.start.y, this.end.y, fraction)}
+    }
+
+    pointToFraction(point: Point): number {
+        let distFromStart = dist(point, this.start)
+        return distFromStart / this.length
     }
 
     trace(ctx: CanvasRenderingContext2D): void {
@@ -112,7 +118,12 @@ export class Satellite {
         return this.path.getPos(fraction)
     }
 
-    setNewPath(angle: number) {}
+    setNewPath(angle: number) {
+        let newPath = this.path.rotateAround(this.getPosAtTime(), angle)
+        let newFraction = newPath.pointToFraction(this.getPosAtTime())
+        this.path = newPath
+        this.pathFraction = newFraction
+    }
 
     previewNewPath(angle: number) {
         let newPath = this.path.rotateAround(this.getPosAtTime(), angle)
