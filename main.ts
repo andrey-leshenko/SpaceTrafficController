@@ -19,7 +19,7 @@ document.addEventListener('mousemove', (e) => {
 let previousTimestamp: number;
 
 async function drawFrame(timestamp: number) {
-    let dt = timestamp - previousTimestamp;
+    let dt = (timestamp - previousTimestamp) / 1000;
     previousTimestamp = timestamp
 
     ctx.fillStyle = 'black'
