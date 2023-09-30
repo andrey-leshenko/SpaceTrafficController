@@ -1,6 +1,6 @@
 import { Satellite } from './satellite.js'
 import { LinePath } from './linepath.js'
-import { Point, dist, getRandomChunk } from './utils.js'
+import { Point, dist, getRandomChunk, PausableTimeout } from './utils.js'
 import { CirclePath } from './circlepath.js'
 
 export class Space {
@@ -9,9 +9,7 @@ export class Space {
     width: number
     height: number
     spawnInterval: number = 3
-    spawnTimerStart: number = 0
-    spawnTime: number = 0
-    spawnTimeout: number = 0
+    spawnTimeout: PausableTimeout
 
     editedSatellite: Satellite | null = null
     editedAngle = 0
@@ -40,18 +38,15 @@ export class Space {
         let path = pathfunc(this, launch_pt!)
         this.satellites.push(new Satellite(this, path, launch_pt!));
 
-        this.spawnTimerStart = performance.now()/1000
-        this.spawnTime = this.spawnInterval
-        this.spawnTimeout = setTimeout(this.spawnSatellite.bind(this), this.spawnTime * 1000)
+        this.spawnTimeout = new PausableTimeout(this.spawnSatellite.bind(this), this.spawnInterval)
     }
 
     pause() {
-        this.spawnTime -= performance.now()/1000 - this.spawnTimerStart
-        clearTimeout(this.spawnTimeout)
+        this.spawnTimeout.pause()
     }
 
     resume() {
-        this.spawnTimeout = setTimeout(this.spawnSatellite.bind(this), this.spawnTime * 1000)
+        this.spawnTimeout.resume()
     }
 
     mouseDown(x: number, y: number) {
@@ -84,7 +79,7 @@ export class Space {
         this.ctx = ctx
         this.width = width
         this.height = height
-        this.spawnSatellite()
+        this.spawnTimeout = new PausableTimeout(this.spawnSatellite.bind(this), 0)
     }
 
     update(dt: number) {
