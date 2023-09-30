@@ -1,4 +1,5 @@
 import { Satellite } from './satellite.js'
+import { LinePath } from './linepath.js'
 import { Point, dist } from './utils.js'
 
 export class Space {
@@ -11,7 +12,7 @@ export class Space {
     editedAngle = 0
 
     spawnSatellite() {
-        this.satellites.push(new Satellite());
+        this.satellites.push(new Satellite(this, LinePath.spawnLinePath(this)));
     }
 
     mouseDown(x: number, y: number) {
@@ -26,6 +27,9 @@ export class Space {
         else {
             this.editedSatellite.setNewPath(this.editedAngle)
             this.editedSatellite = null
+            for (let s of this.satellites) {
+                s.collisionWarning = false
+            }
         }
     }
     mouseMove(x: number, y: number) {
@@ -40,6 +44,10 @@ export class Space {
         this.width = width
         this.height = height
         this.spawnSatellite()
+        this.spawnSatellite()
+        this.spawnSatellite()
+        this.spawnSatellite()
+
     }
 
     update(dt: number) {
@@ -59,6 +67,22 @@ export class Space {
                 }
             }
         }
+
+        // Check for future collisions
+        for (let t = 0; t < 2; t += (1 / 3)) {
+            for (let i = 0; i < this.satellites.length; i++) {
+                for (let j = i + 1; j < this.satellites.length; j++) {
+                    let pi = this.satellites[i].getPosAtTime(t)
+                    let pj = this.satellites[j].getPosAtTime(t)
+                    if (dist(pi, pj) < this.satellites[i].radius + this.satellites[j].radius) {
+                        this.satellites[i].collisionWarning = true
+                        this.satellites[j].collisionWarning = true
+                    }
+                }
+            }
+        }
+
+
 
         for (let s of this.satellites) {
             s.drawPath()
