@@ -21,10 +21,9 @@ export class CirclePath implements Path {
         this.radius = radius
         this.length = 2 * Math.PI * radius
 
-        let phase = (angle + 1.5 * Math.PI);
         this.center = {
-            x: launch_pt.x - Math.cos(phase) * radius,
-            y: launch_pt.y + Math.sin(phase) * radius
+            x: launch_pt.x + Math.cos(angle) * radius,
+            y: launch_pt.y + Math.sin(angle) * radius
         }
     }
 
