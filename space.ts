@@ -8,7 +8,7 @@ export class Space {
     ctx: CanvasRenderingContext2D
     width: number
     height: number
-    spawnInterval: number = 3
+    spawnInterval = (n: number) => 3 + Math.sqrt(n) * 3
     spawnTimeout: PausableTimeout
 
     editedSatellite: Satellite | null = null
@@ -38,7 +38,7 @@ export class Space {
         let path = pathfunc(this, launch_pt!)
         this.satellites.push(new Satellite(this, path, launch_pt!));
 
-        this.spawnTimeout = new PausableTimeout(this.spawnSatellite.bind(this), this.spawnInterval)
+        this.spawnTimeout = new PausableTimeout(this.spawnSatellite.bind(this), this.spawnInterval(this.satellites.length))
     }
 
     pause() {

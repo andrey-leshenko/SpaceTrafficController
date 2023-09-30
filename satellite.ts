@@ -9,7 +9,7 @@ warningImage.src = "assets/warn.png"
 
 export class Satellite {
     pathFraction = 0
-    speed = 20
+    speed = 30
     radius: number = 15
     warningIconSize = 15
     path: Path
@@ -62,7 +62,7 @@ export class Satellite {
     previewNewPath(angle: number) {
         let newPath = this.path.rotateAround(this.getPosAtTime(), angle)
         this.space.ctx.strokeStyle = `hsl(${this.hue}, 40%, 40%)`
-        this.space.ctx.lineWidth = 6
+        this.space.ctx.lineWidth = 3
         this.space.ctx.beginPath()
         newPath.trace(this.space.ctx)
         this.space.ctx.stroke()
@@ -70,7 +70,7 @@ export class Satellite {
 
     drawPath() {
         this.space.ctx.strokeStyle = `hsl(${this.hue}, 40%, 40%)`
-        this.space.ctx.lineWidth = 6
+        this.space.ctx.lineWidth = 3
         this.space.ctx.beginPath()
         this.path.trace(this.space.ctx)
         this.space.ctx.stroke()
