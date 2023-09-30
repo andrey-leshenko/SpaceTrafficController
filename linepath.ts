@@ -18,7 +18,6 @@ export class LinePath implements Path {
             y: getRandomChunk(0, space.height, 8)
         }
         let angle_rad = getRandomChunk(0, 360, 15) * Math.PI / 180.0
-    
         return new LinePath(space, launch_pt, angle_rad)
     }
     

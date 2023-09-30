@@ -44,6 +44,10 @@ export class Space {
         this.width = width
         this.height = height
         this.spawnSatellite()
+        this.spawnSatellite()
+        this.spawnSatellite()
+        this.spawnSatellite()
+
     }
 
     update(dt: number) {
