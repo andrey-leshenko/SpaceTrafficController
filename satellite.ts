@@ -19,10 +19,66 @@ export class LinePath implements Path {
     end: Point
     space: Space
 
-    constructor(space: Space, start: Point, end: Point) {
-        this.start = start
-        this.end = end
-        this.length = dist(start, end)
+    constructor(space: Space, point: Point, angle: number) {
+        this.space = space
+
+        if (Math.abs(Math.cos(angle)) < 0.001) {
+            // Vertical path
+            let top = {x: point.x, y: 0}  // TODO use space boundaries
+            let bottom = {x: point.x, y: this.space.height}
+            if (Math.sin(angle) > 0) {
+                this.start = top
+                this.end = bottom
+            } else {
+                this.start = bottom
+                this.end = top
+            }
+        } else {
+
+            let m = Math.tan(angle)
+            let topHitX
+            let bottomHitX
+            if (Math.abs(m) < 0.001) {
+                topHitX = -1000000
+                bottomHitX = 1000000
+            } else {
+                topHitX = point.x - (point.y - 0) / m
+                bottomHitX = point.x + (space.height - point.y) / m
+            }
+            let rightHitY = point.y + (space.width - point.x) * m
+            let leftHitY = point.y - (point.x - 0) * m
+
+            let end
+            let start
+
+            // Assume rightwards path
+            if (m < 0 && topHitX < space.width) {
+                end = {x: topHitX, y: 0}
+            } else if (m > 0 && bottomHitX < space.width) {
+                end = {x: bottomHitX, y: space.height}
+            } else {
+                end = {x: space.width, y: rightHitY}
+            }
+
+            if (m > 0 && topHitX > 0) {
+                start = {x: topHitX, y: 0}
+            } else if (m < 0 && bottomHitX > 0) {
+                start = {x: bottomHitX, y: space.height}
+            } else {
+                start = {x: 0, y: leftHitY}
+            }
+
+            if (Math.cos(angle) < 0) {
+                let tmp = start
+                this.start = end
+                this.end = start
+            } else {
+                this.start = start
+                this.end = end
+            }
+        }
+
+        this.length = dist(this.start, this.end)
         this.space = space
     }
 
@@ -42,56 +98,8 @@ export class LinePath implements Path {
     }
 
     rotateAround(point: Point, angle: number): Path {
-        if (Math.abs(Math.cos(angle)) < 0.001) {
-            // Vertical path
-            let top = {x: point.x, y: 0}  // TODO use space boundaries
-            let bottom = {x: point.x, y: this.space.height}
-            if (Math.sin(angle) > 0) {
-                return new LinePath(this.space, top, bottom)
-            } else {
-                return new LinePath(this.space, bottom, top)
-            }
-        }
 
-        let m = Math.tan(angle)
-        let topHitX
-        let bottomHitX
-        if (Math.abs(m) < 0.001) {
-            topHitX = -1000000
-            bottomHitX = 1000000
-        } else {
-            topHitX = point.x - (point.y - 0) / m
-            bottomHitX = point.x + (this.space.height - point.y) / m
-        }
-        let rightHitY = point.y + (this.space.width - point.x) * m
-        let leftHitY = point.y - (point.x - 0) * m
-
-        let end
-        let start
-
-        // Assume rightwards path
-        if (m < 0 && topHitX < this.space.width) {
-            end = {x: topHitX, y: 0}
-        } else if (m > 0 && bottomHitX < this.space.width) {
-            end = {x: bottomHitX, y: this.space.height}
-        } else {
-            end = {x: this.space.width, y: rightHitY}
-        }
-
-        if (m > 0 && topHitX > 0) {
-            start = {x: topHitX, y: 0}
-        } else if (m < 0 && bottomHitX > 0) {
-            start = {x: bottomHitX, y: this.space.height}
-        } else {
-            start = {x: 0, y: leftHitY}
-        }
-
-        if (Math.cos(angle) < 0) {
-            let tmp = start
-            start = end
-            end = tmp
-        }
-        return new LinePath(this.space, start, end)
+        return new LinePath(this.space, point, angle)
     }
 }
 
