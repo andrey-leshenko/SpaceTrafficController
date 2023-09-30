@@ -1,13 +1,8 @@
-
-type Point = {x: number, y: number}
+import {Point, dist} from './utils.js'
 
 interface Path {
     length: number
     getPos(fraction: number): {x: number, y: number}
-}
-
-function dist(p1: Point, p2: Point) {
-    return Math.hypot(p1.x - p2.x, p1.y - p2.y)
 }
 
 function interpolate(start: number, end: number, fraction: number): number {
