@@ -1,5 +1,7 @@
 import {Space} from './space.js'
 import {Path} from './path.js'
+import {Point} from './utils.js'
+
 
 export class Satellite {
     pathFraction = 0
@@ -10,10 +12,11 @@ export class Satellite {
     hue: number
     collisionWarning: boolean = false
 
-    constructor(space: Space, path: Path) {
+    constructor(space: Space, path: Path, launch_pt: Point) {
         this.hue = Math.random() * 360
         this.path = path
         this.space = space
+        this.pathFraction = this.path.pointToFraction(launch_pt)
     }
 
     update(dt: number) {

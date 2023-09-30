@@ -1,6 +1,6 @@
 import { Satellite } from './satellite.js'
 import { LinePath } from './linepath.js'
-import { Point, dist } from './utils.js'
+import { Point, dist, getRandomChunk} from './utils.js'
 
 export class Space {
     satellites: Satellite[] = []
@@ -12,7 +12,13 @@ export class Space {
     editedAngle = 0
 
     spawnSatellite() {
-        this.satellites.push(new Satellite(this, LinePath.spawnLinePath(this)));
+        let launch_pt = {
+            x: getRandomChunk(0, this.width, 8),
+            y: getRandomChunk(0, this.height, 8)
+        }
+
+        let linepath = LinePath.spawnLinePath(this, launch_pt)
+        this.satellites.push(new Satellite(this, linepath, launch_pt));
     }
 
     mouseDown(x: number, y: number) {

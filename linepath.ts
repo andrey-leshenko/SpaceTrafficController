@@ -12,11 +12,7 @@ export class LinePath implements Path {
     end: Point
     space: Space
 
-    static spawnLinePath(space: Space) {
-        let launch_pt = {
-            x: getRandomChunk(0, space.width, 8),
-            y: getRandomChunk(0, space.height, 8)
-        }
+    static spawnLinePath(space: Space, launch_pt: Point) {
         let angle_rad = getRandomChunk(0, 360, 15) * Math.PI / 180.0
         return new LinePath(space, launch_pt, angle_rad)
     }
