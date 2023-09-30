@@ -39,6 +39,10 @@ export class CirclePath implements Path {
     trace(ctx: CanvasRenderingContext2D): void {
         [-1, 0, 1].forEach(xmult =>
             [-1, 0, 1].forEach(ymult => {
+                ctx.moveTo(
+                    this.center.x + xmult * this.space.width + this.radius,
+                    this.center.y + ymult * this.space.height
+                );
                 ctx.arc(
                     this.center.x + xmult * this.space.width,
                     this.center.y + ymult * this.space.height,

@@ -1,6 +1,7 @@
 import { Satellite } from './satellite.js'
 import { LinePath } from './linepath.js'
 import { Point, dist, getRandomChunk } from './utils.js'
+import { CirclePath } from './circlepath.js'
 
 export class Space {
     satellites: Satellite[] = []
@@ -21,8 +22,9 @@ export class Space {
             y: getRandomChunk(0, this.height, 8)
         }
 
-        let linepath = LinePath.spawnLinePath(this, launch_pt)
-        this.satellites.push(new Satellite(this, linepath, launch_pt));
+        let pathfunc = [LinePath.spawnLinePath, CirclePath.spawnCirclePath][Math.round(Math.random())]    
+        let path = pathfunc(this, launch_pt)
+        this.satellites.push(new Satellite(this, path, launch_pt));
 
         this.spawnTimerStart = performance.now()/1000
         this.spawnTime = this.spawnInterval
