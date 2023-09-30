@@ -10,10 +10,10 @@ let waitFrame = () => new Promise((resolve,reject) => requestAnimationFrame(reso
 let space = new Space(ctx, canvas.width, canvas.height)
 
 document.addEventListener('mousedown', (e) => {
-    space.mouseDown(e.clientX, e.clientY)
+    space.mouseDown(e.offsetX, e.offsetY)
 })
 document.addEventListener('mousemove', (e) => {
-    space.mouseMove(e.clientX, e.clientY)
+    space.mouseMove(e.offsetX, e.offsetY)
 })
 
 let previousTimestamp: number;
