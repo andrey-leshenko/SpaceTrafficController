@@ -50,7 +50,7 @@ export class LinePath implements Path {
             let start
 
             // Assume rightwards path
-            if (m < 0 && topHitX < space.width) {
+            if (m < 0 && topHitX < space.width && topHitX > 0) {
                 end = { x: topHitX, y: 0 }
             } else if (m > 0 && bottomHitX < space.width) {
                 end = { x: bottomHitX, y: space.height }
@@ -60,7 +60,7 @@ export class LinePath implements Path {
 
             if (m > 0 && topHitX > 0) {
                 start = { x: topHitX, y: 0 }
-            } else if (m < 0 && bottomHitX > 0) {
+            } else if (m < 0 && bottomHitX > 0 && bottomHitX < space.width) {
                 start = { x: bottomHitX, y: space.height }
             } else {
                 start = { x: 0, y: leftHitY }
