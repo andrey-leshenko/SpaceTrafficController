@@ -3,6 +3,9 @@ import { Path } from './path.js'
 import { Point } from './utils.js'
 
 
+let satelliteImage = new Image()
+satelliteImage.src = "assets/sat.png"
+
 export class Satellite {
     pathFraction = 0
     speed = 10
@@ -55,10 +58,11 @@ export class Satellite {
     }
 
     drawSelf() {
+        this.space.ctx.imageSmoothingEnabled = false
         let { x, y } = this.getPosAtTime()
         this.space.ctx.fillStyle = `hsl(${this.hue}, 80%, 80%)`
-        this.space.ctx.beginPath()
-        this.space.ctx.arc(x, y, this.radius, 0, 2 * Math.PI)
-        this.space.ctx.fill()
+        this.space.ctx.drawImage(satelliteImage,
+            x - this.radius / 2,
+            y - this.radius / 2, this.radius, this.radius)
     }
 }
