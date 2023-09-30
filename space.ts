@@ -16,13 +16,27 @@ export class Space {
     editedAngle = 0
 
     spawnSatellite() {
-        let launch_pt = {
-            x: getRandomChunk(0, this.width, 8),
-            y: getRandomChunk(0, this.height, 8)
+        let launch_pt = null
+        let i
+        for (i = 0; i < 100; i++) {
+            launch_pt = {
+                x: getRandomChunk(0, this.width, 8),
+                y: getRandomChunk(0, this.height, 8)
+            }
+            let j
+            let ok = true
+            for (j = 0; j < this.satellites.length; j++) {
+                if (dist(launch_pt, this.satellites[j].getPosAtTime()) < 300) {
+                    ok = false
+                    break
+                }
+            }
+            if (ok)
+                break
         }
 
-        let linepath = LinePath.spawnLinePath(this, launch_pt)
-        this.satellites.push(new Satellite(this, linepath, launch_pt));
+        let linepath = LinePath.spawnLinePath(this, launch_pt!)
+        this.satellites.push(new Satellite(this, linepath, launch_pt!));
 
         this.spawnTimerStart = performance.now()/1000
         this.spawnTime = this.spawnInterval
