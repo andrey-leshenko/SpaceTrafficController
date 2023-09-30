@@ -7,6 +7,10 @@ export class Space {
     ctx: CanvasRenderingContext2D
     width: number
     height: number
+    spawnInterval: number = 3
+    spawnTimerStart: number = 0
+    spawnTime: number = 0
+    spawnTimeout: number = 0
 
     editedSatellite: Satellite | null = null
     editedAngle = 0
@@ -19,6 +23,19 @@ export class Space {
 
         let linepath = LinePath.spawnLinePath(this, launch_pt)
         this.satellites.push(new Satellite(this, linepath, launch_pt));
+
+        this.spawnTimerStart = performance.now()/1000
+        this.spawnTime = this.spawnInterval
+        this.spawnTimeout = setTimeout(this.spawnSatellite.bind(this), this.spawnTime * 1000)
+    }
+
+    pause() {
+        this.spawnTime -= performance.now()/1000 - this.spawnTimerStart
+        clearTimeout(this.spawnTimeout)
+    }
+
+    resume() {
+        this.spawnTimeout = setTimeout(this.spawnSatellite.bind(this), this.spawnTime * 1000)
     }
 
     mouseDown(x: number, y: number) {
@@ -26,6 +43,7 @@ export class Space {
             for (let s of this.satellites) {
                 if (dist({x, y}, s.getPosAtTime()) < s.radius) {
                     this.editedSatellite = s
+                    this.pause()
                     break
                 }
             }
@@ -33,6 +51,7 @@ export class Space {
         else {
             this.editedSatellite.setNewPath(this.editedAngle)
             this.editedSatellite = null
+            this.resume()
             for (let s of this.satellites) {
                 s.collisionWarning = false
             }
@@ -50,10 +69,6 @@ export class Space {
         this.width = width
         this.height = height
         this.spawnSatellite()
-        this.spawnSatellite()
-        this.spawnSatellite()
-        this.spawnSatellite()
-
     }
 
     update(dt: number) {
