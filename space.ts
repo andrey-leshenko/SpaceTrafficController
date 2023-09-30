@@ -31,7 +31,7 @@ export class Space {
     mouseMove(x: number, y: number) {
         if (this.editedSatellite) {
             let {x:satX, y:satY} = this.editedSatellite.getPosAtTime()
-            this.editedAngle = Math.atan2(x - satX, y - satY)
+            this.editedAngle = Math.atan2(y - satY, x - satX)
         }
     }
 
