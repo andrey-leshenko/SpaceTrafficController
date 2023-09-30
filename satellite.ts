@@ -1,4 +1,5 @@
 import {Point, dist} from './utils.js'
+import {Space} from './space.js'
 
 interface Path {
     length: number
@@ -31,9 +32,11 @@ export class Satellite {
     speed = 1
     radius: number = 1
     path: Path
+    space: Space
 
-    constructor(path: Path) {
+    constructor(space: Space, path: Path) {
         this.path = path
+        this.space = space
     }
 
     update(dt: number) {
@@ -53,11 +56,11 @@ export class Satellite {
 
     drawPath(ctx: CanvasRenderingContext2D) {}
 
-    drawSelf(ctx: CanvasRenderingContext2D) {
+    drawSelf() {
         let {x, y} = this.getPosAtTime()
-        ctx.fillStyle = "purple"
-        ctx.beginPath()
-        ctx.arc(x, y, this.radius, 0, 2 * Math.PI)
-        ctx.fill()
+        this.space.ctx.fillStyle = "#808"
+        this.space.ctx.beginPath()
+        this.space.ctx.arc(x, y, this.radius, 0, 2 * Math.PI)
+        this.space.ctx.fill()
     }
 }
