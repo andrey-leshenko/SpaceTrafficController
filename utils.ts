@@ -1,5 +1,40 @@
 export type Point = { x: number, y: number }
 
+export class PausableTimeout {
+    startTime: number
+    timeLeft: number
+    paused: boolean = false
+    timeoutId: number
+    callback: Function
+    constructor(callback: Function, time: number) {
+        this.startTime = performance.now()/1000
+        this.timeLeft = time
+        this.timeoutId = setTimeout(callback, time * 1000)
+        this.callback = callback
+    }
+
+    pause() {
+        if (this.timeLeft < 0)
+            return
+
+        console.assert(!this.paused)
+        let passed = performance.now()/1000 - this.startTime
+        this.timeLeft -= passed
+        clearTimeout(this.timeoutId)
+        this.paused = true
+    }
+
+    resume() {
+        if (this.timeLeft < 0)
+            return
+
+        console.assert(this.paused)
+        this.timeoutId = setTimeout(this.callback, this.timeLeft * 1000)
+        this.startTime = performance.now()/1000
+        this.paused = false
+    }
+}
+
 export function dist(p1: Point, p2: Point) {
     return Math.hypot(p1.x - p2.x, p1.y - p2.y)
 }
