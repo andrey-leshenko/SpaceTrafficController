@@ -60,3 +60,11 @@ export function modpos(pos: Point, bounds: Point) {
         y: mod(pos.y, bounds.y)
     }
 }
+
+export function interpolate(start: number, end: number, fraction: number): number {
+    return (1 - fraction) * start + fraction * end
+}
+
+export function interpolateClamped(start: number, end: number, fraction: number): number {
+    return interpolate(start, end, Math.max(Math.min(fraction, 1), 0))
+}
