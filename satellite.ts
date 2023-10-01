@@ -1,6 +1,7 @@
 import { Space } from './space.js'
 import { Path } from './path.js'
-import { PausableTimeout, Point, modpos } from './utils.js'
+import { PausableTimeout, Point, dist, modpos } from './utils.js'
+import { LinePath } from './linepath.js'
 
 
 let satelliteImage = new Image()
@@ -49,21 +50,41 @@ export class Satellite {
         this.pathFraction -= Math.floor(this.pathFraction)
     }
 
-    getPosAtTime(dt: number = 0) {
+    getPosAtTime(dt: number = 0): Point[] {
         let fraction = this.pathFraction + dt * this.speed / this.path.length
         fraction -= Math.floor(fraction)
-        return this.path.getPos(fraction)
+        let pos = this.path.getPos(fraction)
+
+        // Line paths warping is pretty strange, so we only want to take into account
+        // the alternate copies when the main copy is close to the edge
+
+        let addAlternates: boolean
+
+        if (this.path instanceof LinePath) {
+            let distToEdge = Math.min(fraction, 1 - fraction) * this.path.length
+            addAlternates = distToEdge <= this.radius
+        }
+        else {
+            addAlternates = pos.x < this.radius || pos.y < this.radius
+                || pos.x >= this.space.width - this.radius
+                || pos.y >= this.space.height - this.radius
+        }
+
+        if (addAlternates)
+            return [pos].concat(this.path.getAlternatePos(fraction))
+        else
+            return [pos]
     }
 
-    setNewPath(angle: number) {
-        let newPath = this.path.rotateAround(this.getPosAtTime(), angle)
-        let newFraction = newPath.pointToFraction(this.getPosAtTime())
+    setNewPath(pos: Point, angle: number) {
+        let newPath = this.path.rotateAround(pos, angle)
+        let newFraction = newPath.pointToFraction(pos)
         this.path = newPath
         this.pathFraction = newFraction
     }
 
-    previewNewPath(angle: number) {
-        let newPath = this.path.rotateAround(this.getPosAtTime(), angle)
+    previewNewPath(pos: Point, angle: number) {
+        let newPath = this.path.rotateAround(pos, angle)
         this.space.ctx.strokeStyle = `hsl(${this.hue}, 40%, 40%)`
         this.space.ctx.lineWidth = 3
         this.space.ctx.beginPath()
@@ -82,21 +103,28 @@ export class Satellite {
     drawSelf() {
         this.space.ctx.save()
         this.space.ctx.imageSmoothingEnabled = false
-        let { x, y } = modpos(this.getPosAtTime(), this.space.size())
         this.space.ctx.fillStyle = `hsl(${this.hue}, 80%, 80%)`
         if (!this.active) {
             let age = performance.now()/1000 - this.createTime
             this.space.ctx.globalAlpha = (Math.sin(age*6)+1)/4+0.5
         }
-        this.space.ctx.drawImage(satelliteImage,
-            x - this.radius,
-            y - this.radius, this.radius * 2, this.radius * 2)
-        if (this.collisionWarning) {
-            this.space.ctx.drawImage(warningImage,
-                x + this.radius - this.warningIconSize / 2,
-                y - this.radius - this.warningIconSize / 2,
-                this.warningIconSize, this.warningIconSize)
+
+        let drawSelfAt = (x: number, y: number) => {
+            this.space.ctx.drawImage(satelliteImage,
+                x - this.radius,
+                y - this.radius, this.radius * 2, this.radius * 2)
+            if (this.collisionWarning) {
+                this.space.ctx.drawImage(warningImage,
+                    x + this.radius - this.warningIconSize / 2,
+                    y - this.radius - this.warningIconSize / 2,
+                    this.warningIconSize, this.warningIconSize)
+            }
+            this.space.ctx.restore()
         }
+
+        for (let p of this.getPosAtTime())
+            drawSelfAt(p.x, p.y)
+
         this.space.ctx.restore()
     }
 }

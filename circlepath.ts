@@ -36,6 +36,18 @@ export class CirclePath implements Path {
         return modpos(pos, this.space.size())
     }
 
+    getAlternatePos(fraction: number): Point[] {
+        let pos = this.getPos(fraction)
+        let positions: Point[] = []
+
+        for (let i = -1; i <= 1; i++)
+            for (let j = -1; j <= 1; j++)
+                if (i != 0 || j != 0)
+                positions.push({x: pos.x + i * this.space.width, y: pos.y + j * this.space.height})
+
+        return positions
+    }
+
     trace(ctx: CanvasRenderingContext2D): void {
         [-1, 0, 1].forEach(xmult =>
             [-1, 0, 1].forEach(ymult => {

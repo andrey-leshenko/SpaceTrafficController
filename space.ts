@@ -1,7 +1,9 @@
 import { Satellite } from './satellite.js'
 import { LinePath } from './linepath.js'
-import { dist, getRandomChunk, PausableTimeout, modpos } from './utils.js'
+import { dist, getRandomChunk, PausableTimeout, modpos, Point } from './utils.js'
 import { CirclePath } from './circlepath.js'
+
+type Edited = {satellite: Satellite, pos: Point, angle: number}
 
 export class Space {
     satellites: Satellite[] = []
@@ -14,27 +16,28 @@ export class Space {
 
     playerLives: number = 5
 
-    editedSatellite: Satellite | null = null
-    editedAngle = 0
+    edited: Edited | null = null
 
     size() {
         return {x: this.width, y: this.height}
     }
 
     spawnSatellite() {
-        let launch_pt = null
+        let launchPt = null
         let i
         for (i = 0; i < 100; i++) {
-            launch_pt = {
+            launchPt = {
                 x: getRandomChunk(0, this.width, 8),
                 y: getRandomChunk(0, this.height, 8)
             }
             let j
             let ok = true
-            for (j = 0; j < this.satellites.length; j++) {
-                if (dist(launch_pt, this.satellites[j].getPosAtTime()) < 300) {
-                    ok = false
-                    break
+            for (let s of this.satellites) {
+                for (let p of s.getPosAtTime()) {
+                    if (dist(launchPt, p) < 300) {
+                        ok = false
+                        break
+                    }
                 }
             }
             if (ok)
@@ -42,8 +45,8 @@ export class Space {
         }
 
         let pathfunc = [LinePath.spawnLinePath, CirclePath.spawnCirclePath][Math.round(Math.random())]    
-        let path = pathfunc(this, launch_pt!)
-        this.satellites.push(new Satellite(this, path, launch_pt!));
+        let path = pathfunc(this, launchPt!)
+        this.satellites.push(new Satellite(this, path, launchPt!));
 
         this.spawnTimeout = new PausableTimeout(this.spawnSatellite.bind(this), this.spawnInterval(this.satellites.length))
     }
@@ -61,18 +64,22 @@ export class Space {
     }
 
     mouseDown(x: number, y: number) {
-        if (!this.editedSatellite) {
+        if (!this.edited) {
             for (let s of this.satellites) {
-                if (dist({ x, y }, s.getPosAtTime()) < s.radius) {
-                    this.editedSatellite = s
-                    this.pause()
-                    break
+                for (let p of s.getPosAtTime()) {
+                    if (dist({ x, y }, p) < s.radius) {
+                        this.edited = {
+                            satellite: s, pos: p, angle: 0
+                        }
+                        this.pause()
+                        break
+                    }
                 }
             }
         }
         else {
-            this.editedSatellite.setNewPath(this.editedAngle)
-            this.editedSatellite = null
+            this.edited.satellite.setNewPath(this.edited.pos, this.edited.angle)
+            this.edited = null
             this.resume()
             for (let s of this.satellites) {
                 s.collisionWarning = false
@@ -80,9 +87,9 @@ export class Space {
         }
     }
     mouseMove(x: number, y: number) {
-        if (this.editedSatellite) {
-            let { x: satX, y: satY } = this.editedSatellite.getPosAtTime()
-            this.editedAngle = Math.atan2(y - satY, x - satX)
+        if (this.edited) {
+            let { x: satX, y: satY } = this.edited.pos
+            this.edited.angle = Math.atan2(y - satY, x - satX)
         }
     }
 
@@ -97,13 +104,20 @@ export class Space {
 
     update(dt: number) {
         this.ctx.drawImage(this.background, 0, 0, this.width, this.height)
-        if (!this.editedSatellite) {
+        if (!this.edited) {
             for (let s of this.satellites) {
                 s.update(dt)
             }
         }
 
         // Check for future collisions
+        function willCollideAtTime(a: Satellite, b: Satellite, t: number) {
+            for (let pa of a.getPosAtTime(t))
+                for (let pb of b.getPosAtTime(t))
+                    if (dist(pa, pb) < a.radius + b.radius)
+                        return true;
+        }
+
         for (let t = 0; t < 2; t += (1 / 3)) {
             for (let i = 0; i < this.satellites.length; i++) {
                 if (!this.satellites[i].active)
@@ -111,11 +125,8 @@ export class Space {
                 for (let j = i + 1; j < this.satellites.length; j++) {
                     if (!this.satellites[j].active)
                         continue
-                    let pi = this.satellites[i].getPosAtTime(t)
-                    let pj = this.satellites[j].getPosAtTime(t)
-                    let mpi = modpos(pi, this.size())
-                    let mpj = modpos(pj, this.size())
-                    if (dist(mpi, mpj) < this.satellites[i].radius + this.satellites[j].radius) {
+
+                    if (willCollideAtTime(this.satellites[i], this.satellites[j], t)) {
                         this.satellites[i].collisionWarning = true
                         this.satellites[j].collisionWarning = true
                     }
@@ -126,11 +137,7 @@ export class Space {
         // Check for collisions
         for (let i = 0; i < this.satellites.length; i++) {
             for (let j = i + 1; j < this.satellites.length; j++) {
-                let pi = this.satellites[i].getPosAtTime()
-                let pj = this.satellites[j].getPosAtTime()
-                let mpi = modpos(pi, this.size())
-                let mpj = modpos(pj, this.size())
-                if (dist(mpi, mpj) < this.satellites[i].radius + this.satellites[j].radius) {
+                if (willCollideAtTime(this.satellites[i], this.satellites[j], 0)) {
                     console.log('BOOM!')
                     this.satellites.splice(j, 1)
                     this.satellites.splice(i, 1)
@@ -143,8 +150,8 @@ export class Space {
             s.drawPath()
         }
 
-        if (this.editedSatellite) {
-            this.editedSatellite.previewNewPath(this.editedAngle)
+        if (this.edited) {
+            this.edited.satellite.previewNewPath(this.edited.pos, this.edited.angle)
         }
 
         for (let s of this.satellites) {

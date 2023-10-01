@@ -87,6 +87,13 @@ export class LinePath implements Path {
         }
     }
 
+    getAlternatePos(fraction: number): Point[] {
+        if (fraction < 0.5)
+            return [this.getPos(fraction + 1)]
+        else
+            return [this.getPos(fraction - 1)]
+    }
+
     pointToFraction(point: Point): number {
         let distFromStart = dist(point, this.start)
         return distFromStart / this.length
