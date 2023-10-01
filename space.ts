@@ -78,7 +78,7 @@ export class Space {
             let ok = true
             for (let s of this.satellites) {
                 for (let p of s.getPosAtTime()) {
-                    if (dist(launchPt, p) < 300) {
+                    if (dist(launchPt, p) < 150) {
                         ok = false
                         break
                     }
