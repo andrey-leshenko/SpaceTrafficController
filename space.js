@@ -37,7 +37,7 @@ export class Space {
         this.satellites = [];
         this.spawnInterval = (n) => 3 + Math.sqrt(n) * 3;
         this.drawables = [];
-        this.playerLives = 5;
+        this.playerLives = 3;
         this.edited = null;
         this.ctx = ctx;
         this.width = width;
@@ -132,7 +132,7 @@ export class Space {
         function willCollideAtTime(a, b, t) {
             return collisionPointAtTime(a, b, t) != null;
         }
-        for (let t = 0; t < 2; t += (1 / 3)) {
+        for (let t = 0; t < 3; t += (1 / 3)) {
             for (let i = 0; i < this.satellites.length; i++) {
                 if (!this.satellites[i].active)
                     continue;
@@ -169,6 +169,9 @@ export class Space {
                     this.satellites.splice(j, 1);
                     this.satellites.splice(i, 1);
                     this.playerLives -= 1;
+                    for (let s of this.satellites) {
+                        s.collisionWarning = false;
+                    }
                 }
             }
         }

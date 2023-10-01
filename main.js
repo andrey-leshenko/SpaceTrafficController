@@ -10,10 +10,11 @@ document.addEventListener('mousemove', (e) => {
 let previousTimestamp;
 let playing = true;
 let endScreen;
+let endTimestamp;
 document.addEventListener('mousedown', (e) => {
     if (playing)
         space.mouseDown(e.offsetX, e.offsetY);
-    else {
+    else if ((performance.now() - endTimestamp) / 1000 > 2) {
         space = new Space(ctx, canvas.width, canvas.height);
         playing = true;
     }
@@ -28,11 +29,12 @@ async function drawFrame(timestamp) {
     if (space.playerLives <= 0 && playing) {
         playing = false;
         endScreen = new EndScreen(space);
+        endTimestamp = timestamp;
         space.pause();
     }
     space.draw();
     if (!playing)
-        endScreen.draw();
+        endScreen.draw((timestamp - endTimestamp) / 1000);
 }
 async function main() {
     previousTimestamp = await waitFrame();

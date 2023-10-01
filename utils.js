@@ -45,3 +45,9 @@ export function modpos(pos, bounds) {
         y: mod(pos.y, bounds.y)
     };
 }
+export function interpolate(start, end, fraction) {
+    return (1 - fraction) * start + fraction * end;
+}
+export function interpolateClamped(start, end, fraction) {
+    return interpolate(start, end, Math.max(Math.min(fraction, 1), 0));
+}
