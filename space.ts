@@ -1,7 +1,47 @@
 import { Satellite } from './satellite.js'
 import { LinePath } from './linepath.js'
-import { dist, getRandomChunk, PausableTimeout, modpos } from './utils.js'
+import { dist, getRandomChunk, PausableTimeout, modpos, Point } from './utils.js'
 import { CirclePath } from './circlepath.js'
+
+let sleep = (time: number) => new Promise((resolve, reject) => setTimeout(resolve, time * 1000))
+
+interface Drawable {
+    draw(): void
+}
+
+let explosionSprite = new Image()
+explosionSprite.src = "assets/explosion.png"
+const SPRITE_WIDTH = 95
+const SPRITE_HEIGHT = 108
+class Explosion implements Drawable {
+    space: Space
+    pos: Point
+    step: number = 0
+
+    async progress() {
+        let i
+        for (i = 0; i < 3; i++) {
+            await sleep(.15)
+            this.step += 1
+        }
+        await sleep(.15)
+        this.space.drawables.splice(this.space.drawables.indexOf(this))
+    }
+
+    constructor(space: Space, pos: Point) {
+        this.space = space
+        this.space.drawables.push(this)
+        this.pos = pos
+        this.progress()
+    }
+
+    draw() {
+        this.space.ctx.drawImage(explosionSprite, SPRITE_WIDTH*this.step, 0,
+                                                  SPRITE_WIDTH, SPRITE_HEIGHT,
+                                                  this.pos.x - SPRITE_WIDTH/2, this.pos.y - SPRITE_HEIGHT/2,
+                                                  SPRITE_WIDTH, SPRITE_HEIGHT)
+    }
+}
 
 export class Space {
     satellites: Satellite[] = []
@@ -11,6 +51,7 @@ export class Space {
     spawnInterval = (n: number) => 3 + Math.sqrt(n) * 3
     spawnTimeout: PausableTimeout
     background: HTMLImageElement
+    drawables: Drawable[] = []
 
     playerLives: number = 5
 
@@ -132,6 +173,7 @@ export class Space {
                 let mpj = modpos(pj, this.size())
                 if (dist(mpi, mpj) < this.satellites[i].radius + this.satellites[j].radius) {
                     console.log('BOOM!')
+                    new Explosion(this, {x: (pi.x + pj.x)/2, y: (pi.y + pj.y)/2})
                     this.satellites.splice(j, 1)
                     this.satellites.splice(i, 1)
                     this.playerLives -= 1
@@ -149,6 +191,10 @@ export class Space {
 
         for (let s of this.satellites) {
             s.drawSelf()
+        }
+
+        for (let d of this.drawables) {
+            d.draw()
         }
     }
 }
