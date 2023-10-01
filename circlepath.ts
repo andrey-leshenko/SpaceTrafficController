@@ -78,4 +78,8 @@ export class CirclePath implements Path {
     rotateAround(point: Point, angle: number): Path {
         return new CirclePath(this.space, this.radius, point, angle)
     }
+
+    directionAt(fraction: number): number {
+        return fraction * Math.PI * 2 + Math.PI/2
+    }
 }
