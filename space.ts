@@ -4,6 +4,45 @@ import { dist, getRandomChunk, PausableTimeout, modpos, Point } from './utils.js
 import { CirclePath } from './circlepath.js'
 
 type Edited = {satellite: Satellite, pos: Point, angle: number}
+let sleep = (time: number) => new Promise((resolve, reject) => setTimeout(resolve, time * 1000))
+
+interface Drawable {
+    draw(): void
+}
+
+let explosionSprite = new Image()
+explosionSprite.src = "assets/explosion.png"
+const SPRITE_WIDTH = 95
+const SPRITE_HEIGHT = 108
+class Explosion implements Drawable {
+    space: Space
+    pos: Point
+    step: number = 0
+
+    async progress() {
+        let i
+        for (i = 0; i < 3; i++) {
+            await sleep(.15)
+            this.step += 1
+        }
+        await sleep(.15)
+        this.space.drawables.splice(this.space.drawables.indexOf(this))
+    }
+
+    constructor(space: Space, pos: Point) {
+        this.space = space
+        this.space.drawables.push(this)
+        this.pos = pos
+        this.progress()
+    }
+
+    draw() {
+        this.space.ctx.drawImage(explosionSprite, SPRITE_WIDTH*this.step, 0,
+                                                  SPRITE_WIDTH, SPRITE_HEIGHT,
+                                                  this.pos.x - SPRITE_WIDTH/2, this.pos.y - SPRITE_HEIGHT/2,
+                                                  SPRITE_WIDTH, SPRITE_HEIGHT)
+    }
+}
 
 export class Space {
     satellites: Satellite[] = []
@@ -13,6 +52,7 @@ export class Space {
     spawnInterval = (n: number) => 3 + Math.sqrt(n) * 3
     spawnTimeout: PausableTimeout
     background: HTMLImageElement
+    drawables: Drawable[] = []
 
     playerLives: number = 5
 
@@ -111,11 +151,16 @@ export class Space {
         }
 
         // Check for future collisions
-        function willCollideAtTime(a: Satellite, b: Satellite, t: number) {
+        function collisionPointAtTime(a: Satellite, b: Satellite, t: number): Point | null {
             for (let pa of a.getPosAtTime(t))
                 for (let pb of b.getPosAtTime(t))
                     if (dist(pa, pb) < a.radius + b.radius)
-                        return true;
+                        return {x: (pa.x + pb.x) / 2, y: (pa.y + pb.y) / 2}
+            return null
+        }
+
+        function willCollideAtTime(a: Satellite, b: Satellite, t: number): boolean {
+            return collisionPointAtTime(a, b, t) != null
         }
 
         for (let t = 0; t < 2; t += (1 / 3)) {
@@ -136,9 +181,14 @@ export class Space {
 
         // Check for collisions
         for (let i = 0; i < this.satellites.length; i++) {
+            if (!this.satellites[i].active)
+                continue
             for (let j = i + 1; j < this.satellites.length; j++) {
+                if (!this.satellites[j].active)
+                    continue
                 if (willCollideAtTime(this.satellites[i], this.satellites[j], 0)) {
                     console.log('BOOM!')
+                    new Explosion(this, collisionPointAtTime(this.satellites[i], this.satellites[j], 0)!)
                     this.satellites.splice(j, 1)
                     this.satellites.splice(i, 1)
                     this.playerLives -= 1
@@ -156,6 +206,10 @@ export class Space {
 
         for (let s of this.satellites) {
             s.drawSelf()
+        }
+
+        for (let d of this.drawables) {
+            d.draw()
         }
     }
 }
