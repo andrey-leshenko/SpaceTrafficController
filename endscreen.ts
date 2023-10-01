@@ -19,11 +19,12 @@ export class EndScreen {
         this.space.ctx.fillRect(0, 0, this.space.width, this.space.height)
         this.space.ctx.globalAlpha = 1.0
         this.space.ctx.fillStyle = "white"
-        this.space.ctx.font = "50px monospace"
+        this.space.ctx.font = "bold 50px monospace"
         this.centerText('You\'re fired!', 120)
         this.space.ctx.font = "40px sans-serif"
         this.centerText('You finished your career', 250)
-        this.centerText(`with ${this.space.satellites.length} satellite${this.space.satellites.length == 1?'':'s'}`, 310)
+        let count = this.space.satellites.length
+        this.centerText(`with ${count} satellite${count == 1?'':'s'} in space`, 310)
         this.space.ctx.font = "25px sans-serif"
         this.centerText('Press anywhere to restart', 450)
         this.space.ctx.restore()
