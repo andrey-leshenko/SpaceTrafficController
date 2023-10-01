@@ -166,7 +166,11 @@ export class Space {
 
         // Check for collisions
         for (let i = 0; i < this.satellites.length; i++) {
+            if (!this.satellites[i].active)
+                continue
             for (let j = i + 1; j < this.satellites.length; j++) {
+                if (!this.satellites[j].active)
+                    continue
                 let pi = this.satellites[i].getPosAtTime()
                 let pj = this.satellites[j].getPosAtTime()
                 let mpi = modpos(pi, this.size())
