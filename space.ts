@@ -2,6 +2,7 @@ import { Satellite } from './satellite.js'
 import { LinePath } from './linepath.js'
 import { dist, getRandomChunk, PausableTimeout, modpos, Point } from './utils.js'
 import { CirclePath } from './circlepath.js'
+import { HUD } from './hud.js'
 
 type Edited = {satellite: Satellite, pos: Point, angle: number}
 let sleep = (time: number) => new Promise((resolve, reject) => setTimeout(resolve, time * 1000))
@@ -140,6 +141,7 @@ export class Space {
         this.spawnTimeout = new PausableTimeout(this.spawnSatellite.bind(this), 0)
         this.background = new Image()
         this.background.src = "assets/bg.png"
+        this.drawables.push(new HUD(this))
     }
 
     update(dt: number) {
