@@ -208,6 +208,9 @@ export class Space {
                     this.satellites.splice(j, 1)
                     this.satellites.splice(i, 1)
                     this.playerLives -= 1
+                    for (let s of this.satellites) {
+                        s.collisionWarning = false
+                    }
                 }
             }
         }
