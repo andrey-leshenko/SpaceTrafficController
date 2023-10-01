@@ -10,6 +10,7 @@ export class Space {
     height: number
     spawnInterval = (n: number) => 3 + Math.sqrt(n) * 3
     spawnTimeout: PausableTimeout
+    background: HTMLImageElement
 
     editedSatellite: Satellite | null = null
     editedAngle = 0
@@ -88,9 +89,12 @@ export class Space {
         this.width = width
         this.height = height
         this.spawnTimeout = new PausableTimeout(this.spawnSatellite.bind(this), 0)
+        this.background = new Image()
+        this.background.src = "assets/bg.png"
     }
 
     update(dt: number) {
+        this.ctx.drawImage(this.background, 0, 0, this.width, this.height)
         if (!this.editedSatellite) {
             for (let s of this.satellites) {
                 s.update(dt)
