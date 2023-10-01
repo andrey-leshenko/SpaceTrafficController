@@ -148,7 +148,6 @@ export class Space {
     }
 
     update(dt: number) {
-        this.ctx.drawImage(this.background, 0, 0, this.width, this.height)
         if (!this.edited) {
             for (let s of this.satellites) {
                 s.update(dt)
@@ -215,6 +214,8 @@ export class Space {
     }
 
     draw() {
+        this.ctx.drawImage(this.background, 0, 0, this.width, this.height)
+
         for (let s of this.satellites) {
             s.drawPath()
         }
