@@ -104,13 +104,13 @@ export class Satellite {
     drawDirectionArrow(direction: number) {
         for (let p of this.getPosAtTime()) {
             this.space.ctx.save()
-            this.space.ctx.fillStyle = "white"
+            this.space.ctx.fillStyle = "#ccc"
             this.space.ctx.translate(p.x + Math.cos(direction) * 35, p.y + Math.sin(direction) * 35)
             this.space.ctx.rotate(direction + Math.PI / 2)
             this.space.ctx.beginPath()
-            this.space.ctx.moveTo(-8, 6)
-            this.space.ctx.lineTo(8, 6)
-            this.space.ctx.lineTo(0, -8)
+            this.space.ctx.moveTo(-6, 6)
+            this.space.ctx.lineTo(6, 6)
+            this.space.ctx.lineTo(0, -4)
             this.space.ctx.fill()
             this.space.ctx.restore()
         }
