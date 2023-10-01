@@ -90,6 +90,7 @@ export class Satellite {
         this.space.ctx.beginPath()
         newPath.trace(this.space.ctx)
         this.space.ctx.stroke()
+        this.drawDirectionArrow(newPath.directionAt(newPath.pointToFraction(pos)))
     }
 
     drawPath() {
@@ -100,11 +101,27 @@ export class Satellite {
         this.space.ctx.stroke()
     }
 
+    drawDirectionArrow(direction: number) {
+        for (let p of this.getPosAtTime()) {
+            this.space.ctx.save()
+            this.space.ctx.fillStyle = "white"
+            this.space.ctx.translate(p.x + Math.cos(direction) * 35, p.y + Math.sin(direction) * 35)
+            this.space.ctx.rotate(direction + Math.PI / 2)
+            this.space.ctx.beginPath()
+            this.space.ctx.moveTo(-8, 6)
+            this.space.ctx.lineTo(8, 6)
+            this.space.ctx.lineTo(0, -8)
+            this.space.ctx.fill()
+            this.space.ctx.restore()
+        }
+    }
+
     drawSelf() {
         this.space.ctx.save()
         this.space.ctx.imageSmoothingEnabled = false
         this.space.ctx.fillStyle = `hsl(${this.hue}, 80%, 80%)`
         if (!this.active) {
+            this.drawDirectionArrow(this.path.directionAt(this.pathFraction))
             let age = performance.now()/1000 - this.createTime
             this.space.ctx.globalAlpha = (Math.sin(age*6)+1)/4+0.5
         }

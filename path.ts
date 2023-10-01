@@ -7,4 +7,5 @@ export interface Path {
     pointToFraction(point: Point): number
     rotateAround(point: Point, angle: number): Path
     trace(ctx: CanvasRenderingContext2D): void
+    directionAt(fraction: number): number
 }

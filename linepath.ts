@@ -107,4 +107,8 @@ export class LinePath implements Path {
     rotateAround(point: Point, angle: number): Path {
         return new LinePath(this.space, point, angle)
     }
+
+    directionAt(fraction: number): number {
+        return Math.atan2(this.end.y - this.start.y, this.end.x - this.start.x)
+    }
 }
