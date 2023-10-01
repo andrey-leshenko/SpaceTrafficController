@@ -1,10 +1,6 @@
-import { Point, dist, getRandomChunk } from './utils.js'
+import { Point, dist, getRandomChunk, interpolate } from './utils.js'
 import { Space } from './space.js'
 import { Path } from './path.js'
-
-function interpolate(start: number, end: number, fraction: number): number {
-    return (1 - fraction) * start + fraction * end
-}
 
 export class LinePath implements Path {
     length: number
