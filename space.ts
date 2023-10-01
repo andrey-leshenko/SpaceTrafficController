@@ -11,6 +11,8 @@ export class Space {
     spawnInterval = (n: number) => 3 + Math.sqrt(n) * 3
     spawnTimeout: PausableTimeout
 
+    playerLives: number = 5
+
     editedSatellite: Satellite | null = null
     editedAngle = 0
 
@@ -126,8 +128,9 @@ export class Space {
                 let mpj = modpos(pj, this.size())
                 if (dist(mpi, mpj) < this.satellites[i].radius + this.satellites[j].radius) {
                     console.log('BOOM!')
-                    this.satellites[i].collisionWarning = false
-                    this.satellites[j].collisionWarning = false
+                    this.satellites.splice(j, 1)
+                    this.satellites.splice(i, 1)
+                    this.playerLives -= 1
                 }
             }
         }
