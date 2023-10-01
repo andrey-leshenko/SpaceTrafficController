@@ -13,13 +13,12 @@ export class HUD {
     }
 
     draw() {
-        this.space.ctx.drawImage(heart, 10, 10, 32, 30)
-        this.space.ctx.font = "30px sans-serif"
-        this.space.ctx.strokeStyle = "white"
-        this.space.ctx.strokeText(`${this.space.playerLives}`, 50, 36)
-        this.space.ctx.drawImage(satellite, 100, 10, 32, 30)
-        this.space.ctx.font = "30px sans-serif"
-        this.space.ctx.strokeStyle = "white"
-        this.space.ctx.strokeText(`${this.space.satellites.length}`, 140, 36)
+        this.space.ctx.imageSmoothingEnabled = false
+        this.space.ctx.drawImage(heart, 15, 10, 32, 30)
+        this.space.ctx.font = "bolder 30px sans-serif"
+        this.space.ctx.fillStyle = "white"
+        this.space.ctx.fillText(`${this.space.playerLives}`, 55, 36)
+        this.space.ctx.drawImage(satellite, 95, 10, 32, 30)
+        this.space.ctx.fillText(`${this.space.satellites.length}`, 140, 36)
     }
 }
