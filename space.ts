@@ -58,7 +58,7 @@ export class Space {
     background: HTMLImageElement
     drawables: Drawable[] = []
 
-    playerLives: number = 5
+    playerLives: number = 3
 
     edited: Edited | null = null
 
@@ -167,7 +167,7 @@ export class Space {
             return collisionPointAtTime(a, b, t) != null
         }
 
-        for (let t = 0; t < 2; t += (1 / 3)) {
+        for (let t = 0; t < 3; t += (1 / 3)) {
             for (let i = 0; i < this.satellites.length; i++) {
                 if (!this.satellites[i].active)
                     continue
