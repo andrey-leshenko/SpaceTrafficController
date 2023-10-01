@@ -3,6 +3,7 @@ import { LinePath } from './linepath.js'
 import { dist, getRandomChunk, PausableTimeout, modpos, Point } from './utils.js'
 import { CirclePath } from './circlepath.js'
 import { HUD } from './hud.js'
+import { AudioEffects } from './audioEffects.js'
 
 type Edited = {satellite: Satellite, pos: Point, angle: number}
 let sleep = (time: number) => new Promise((resolve, reject) => setTimeout(resolve, time * 1000))
@@ -34,6 +35,8 @@ class Explosion implements Drawable {
         this.space = space
         this.space.drawables.push(this)
         this.pos = pos
+        AudioEffects.audioBoom.currentTime = 0
+        AudioEffects.audioBoom.play()
         this.progress()
     }
 
@@ -178,6 +181,18 @@ export class Space {
                         this.satellites[j].collisionWarning = true
                     }
                 }
+            }
+        }
+
+        let warningOn = this.satellites.some(s => s.collisionWarning)
+
+        if (warningOn == AudioEffects.audioBeep.paused) {
+            if (warningOn) {
+                AudioEffects.audioBeep.currentTime = 0
+                AudioEffects.audioBeep.play()
+            }
+            else {
+                AudioEffects.audioBeep.pause()
             }
         }
 
