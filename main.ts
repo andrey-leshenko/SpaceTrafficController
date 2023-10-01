@@ -1,6 +1,7 @@
 export { }
 
 import { Space } from './space.js'
+import { EndScreen } from './endscreen.js'
 
 let canvas: HTMLCanvasElement = document.getElementById('canvas')! as HTMLCanvasElement
 let ctx = canvas.getContext('2d')!
@@ -9,14 +10,22 @@ let waitFrame = () => new Promise((resolve, reject) => requestAnimationFrame(res
 
 let space = new Space(ctx, canvas.width, canvas.height)
 
-document.addEventListener('mousedown', (e) => {
-    space.mouseDown(e.offsetX, e.offsetY)
-})
 document.addEventListener('mousemove', (e) => {
     space.mouseMove(e.offsetX, e.offsetY)
 })
 
 let previousTimestamp: number;
+let playing = true
+let endScreen: EndScreen
+
+document.addEventListener('mousedown', (e) => {
+    if (playing)
+        space.mouseDown(e.offsetX, e.offsetY)
+    else {
+        space = new Space(ctx, canvas.width, canvas.height)
+        playing = true
+    }
+})
 
 async function drawFrame(timestamp: number) {
     let dt = (timestamp - previousTimestamp) / 1000;
@@ -25,7 +34,19 @@ async function drawFrame(timestamp: number) {
     ctx.fillStyle = 'black'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-    space.update(dt)
+    if (playing)
+        space.update(dt)
+
+    if (space.playerLives <= 0 && playing) {
+        playing = false
+        endScreen = new EndScreen(space)
+        space.pause()
+    }
+
+    space.draw()
+
+    if (!playing)
+        endScreen.draw()
 }
 
 async function main() {

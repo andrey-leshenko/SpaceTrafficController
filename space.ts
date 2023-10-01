@@ -212,7 +212,9 @@ export class Space {
                 }
             }
         }
+    }
 
+    draw() {
         for (let s of this.satellites) {
             s.drawPath()
         }
