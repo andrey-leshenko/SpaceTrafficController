@@ -14,7 +14,8 @@ export class EndScreen {
 
     draw() {
         this.space.ctx.save()
-        this.space.ctx.globalAlpha = 0.5
+        this.space.ctx.globalAlpha = 0.4
+        this.space.ctx.fillStyle = "black"
         this.space.ctx.fillRect(0, 0, this.space.width, this.space.height)
         this.space.ctx.globalAlpha = 1.0
         this.space.ctx.fillStyle = "white"
